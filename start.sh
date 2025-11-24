@@ -7,6 +7,18 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Function to cleanup on exit
+cleanup() {
+    echo -e "\n${YELLOW}🛑 Cleaning up processes...${NC}"
+    if [ -f ".pids" ]; then
+        ./stop.sh
+    fi
+    exit 0
+}
+
+# Set trap for cleanup on script termination
+trap cleanup SIGINT SIGTERM
+
 echo -e "${BLUE}╔═══════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║   Azure Infrastructure Query System - Quick Start   ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════╝${NC}"
@@ -30,51 +42,80 @@ check_port() {
     fi
 }
 
+# Function to kill process on port
+kill_port() {
+    local port=$1
+    local pid=$(lsof -ti:$port)
+    if [ ! -z "$pid" ]; then
+        echo -e "${YELLOW}⚠️  Killing existing process on port $port (PID: $pid)${NC}"
+        kill $pid 2>/dev/null
+        sleep 2
+        # Force kill if still running
+        if ps -p $pid > /dev/null 2>&1; then
+            kill -9 $pid 2>/dev/null
+        fi
+    fi
+}
+
+# Install root dependencies if needed
+if [ ! -d "node_modules" ]; then
+    echo -e "${YELLOW}📦 Installing root dependencies...${NC}"
+    npm install
+fi
+
+# Install all dependencies using the script from package.json
+echo -e "${YELLOW}📦 Installing backend and frontend dependencies...${NC}"
+npm run install:all
+
+# Check and handle backend port conflict
+if check_port 3000; then
+    echo -e "${YELLOW}⚠️  Port 3000 is in use, attempting to free it...${NC}"
+    kill_port 3000
+fi
+
+# Double check backend port is free
+if check_port 3000; then
+    echo -e "${RED}❌ Port 3000 is still in use after cleanup attempt.${NC}"
+    echo -e "${YELLOW}💡 Please manually stop the process using: lsof -i :3000${NC}"
+    exit 1
+fi
+
 # Start backend
 echo -e "${YELLOW}🔧 Starting Backend Server...${NC}"
 cd backend
 
-if [ ! -d "node_modules" ]; then
-    echo -e "${YELLOW}📦 Installing backend dependencies...${NC}"
-    npm install
-fi
-
-if check_port 3000; then
-    echo -e "${RED}⚠️  Port 3000 is already in use. Please stop the existing process.${NC}"
-    exit 1
-fi
-
 # Start backend in background
-npm start > backend.log 2>&1 &
+npm start &
 BACKEND_PID=$!
 echo -e "${GREEN}✓${NC} Backend started (PID: $BACKEND_PID) on http://localhost:3000"
-echo -e "  Logs: backend/backend.log"
 
 # Wait for backend to be ready
 echo -e "${YELLOW}⏳ Waiting for backend to be ready...${NC}"
-sleep 3
+sleep 5
+
+# Verify backend is running
+if ! check_port 3000; then
+    echo -e "${RED}❌ Backend failed to start on port 3000${NC}"
+    kill $BACKEND_PID
+    exit 1
+fi
 
 # Start frontend
 cd ../frontend
 echo ""
 echo -e "${YELLOW}🎨 Starting Frontend...${NC}"
 
-if [ ! -d "node_modules" ]; then
-    echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
-    npm install
-fi
-
-if check_port 5173; then
-    echo -e "${RED}⚠️  Port 5173 is already in use. Please stop the existing process.${NC}"
-    kill $BACKEND_PID
-    exit 1
-fi
-
-# Start frontend in background
-npm run dev > frontend.log 2>&1 &
+# Start frontend in background - let Vite choose available port automatically
+npm run dev &
 FRONTEND_PID=$!
-echo -e "${GREEN}✓${NC} Frontend started (PID: $FRONTEND_PID) on http://localhost:5173"
-echo -e "  Logs: frontend/frontend.log"
+echo -e "${GREEN}✓${NC} Frontend started (PID: $FRONTEND_PID)"
+
+# Wait for frontend to be ready
+sleep 5
+
+# Frontend URL will be shown in the terminal output
+FRONTEND_URL="http://localhost:5173"
+echo -e "${GREEN}✓${NC} Frontend should be available shortly (Vite will show the actual URL)"
 
 # Save PIDs to file for cleanup
 cd ..
@@ -86,16 +127,15 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║              🎉 Application is Running! 🎉           ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${GREEN}🌐 Open your browser:${NC} http://localhost:5173"
+echo -e "${GREEN}🌐 Open your browser:${NC} $FRONTEND_URL"
 echo -e "${GREEN}📊 Backend API:${NC}       http://localhost:3000/health"
 echo ""
 echo -e "${YELLOW}💡 To stop the application:${NC} ./stop.sh"
-echo -e "${YELLOW}📝 View logs:${NC}"
-echo -e "   - Backend:  tail -f backend/backend.log"
-echo -e "   - Frontend: tail -f frontend/frontend.log"
+echo -e "${YELLOW}📝 View logs in the terminal output above${NC}"
 echo ""
 echo -e "${GREEN}✨ Happy querying!${NC}"
 echo ""
 
-# Keep script running
+# Keep script running and wait for processes
+echo -e "${YELLOW}🔄 Application running. Press Ctrl+C to stop...${NC}"
 wait
