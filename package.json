@@ -1,0 +1,28 @@
+{
+  "name": "azure-infrastructure-query",
+  "version": "1.0.0",
+  "description": "AI-powered Azure infrastructure query system using Azure OpenAI",
+  "private": true,
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "backend": "cd backend && npm start",
+    "backend:dev": "cd backend && npm run dev",
+    "backend:test": "cd backend && npm test",
+    "frontend": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend\"",
+    "start": "npm run backend"
+  },
+  "keywords": [
+    "azure",
+    "openai",
+    "infrastructure",
+    "ai",
+    "chatbot"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
