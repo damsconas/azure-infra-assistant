@@ -1,5 +1,8 @@
 # Azure Infrastructure AI Assistant
 
+> **Built by Damilola Onadeinde**
+> *DevOps Engineer & Cloud Infrastructure Specialist*
+
 An AI-powered chat interface that allows non-technical team members to query Azure infrastructure using natural language. Built with React, TypeScript, Azure OpenAI, and Azure SDKs, featuring a modern ChatGPT-style UI.
 
 ## 🎯 Project Purpose
@@ -349,6 +352,25 @@ Areas for improvement and contribution:
 - Performance optimizations
 - Additional UI themes and customization options
 
+## ☕ Support the Developer
+
+If you find this project helpful and would like to support my work, consider buying me a coffee!
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support%20My%20Work-orange?style=for-the-badge&logo=buymeacoffee)](https://buymeacoffee.com/devopswithdami)
+
+Your support helps me continue creating open-source tools and improving this project!
+
+## 👨‍💻 About the Developer
+
+**Damilola Onadeinde**
+*DevOps/AI Engineer | Cloud Infrastructure Specialist | Open Source Contributor*
+
+Connect with me:
+- GitHub: [@damsconas](https://github.com/damsconas)
+- LinkedIn: [Damilola Onadeinde](https://linkedin.com/in/damilola-onadeinde)
+- Portfolio: [devopswithdami.com](https://devopswithdami.com)
+- youtube: [devopswithdami](https://youtube.com/"devopswithdami.com)
+
 ## 📝 License
 
 MIT License - feel free to use for personal or commercial projects.
@@ -370,3 +392,7 @@ For issues or questions:
 - Implement user authentication and role-based access
 - Add support for Azure Policy and compliance queries
 - Enhanced file analysis with document intelligence
+
+---
+
+*Built with ❤️ by Damilola Onadeinde | [Support my work](https://buymeacoffee.com/devopswithdami)*
