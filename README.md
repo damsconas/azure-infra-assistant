@@ -6,6 +6,8 @@ An AI-powered chat interface that allows non-technical team members to query Azu
 
 This project bridges the gap between technical Azure infrastructure and non-technical team members by providing an intuitive chat interface where users can ask questions about their Azure resources in plain English. The system intelligently analyzes queries, extracts relevant parameters, and fetches real-time data from Azure using the Azure SDKs.
 
+![alt text](image.png)
+
 ## ✨ Key Features
 
 ### 🤖 AI-Powered Query Processing
