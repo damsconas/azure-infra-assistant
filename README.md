@@ -1,22 +1,125 @@
-# Azure Infrastructure AI Query System
+# Azure Infrastructure AI Assistant
 
-An AI-powered solution that allows non-technical team members to query Azure infrastructure using natural language. Built with Azure OpenAI and Azure SDKs.
+An AI-powered chat interface that allows non-technical team members to query Azure infrastructure using natural language. Built with React, TypeScript, Azure OpenAI, and Azure SDKs, featuring a modern ChatGPT-style UI.
 
-## 🎯 Features
+## 🎯 Project Purpose
 
-- **Natural Language Queries**: Ask questions in plain English about your Azure resources
-- **Comprehensive Resource Support**: 
-  - Virtual Machines (status, SKU, configuration)
-  - Databases (SQL, CosmosDB)
-  - Virtual Networks and Subnets
-  - Storage Accounts
-  - Resource Groups
-  - Cost and billing information
+This project bridges the gap between technical Azure infrastructure and non-technical team members by providing an intuitive chat interface where users can ask questions about their Azure resources in plain English. The system intelligently analyzes queries, extracts relevant parameters, and fetches real-time data from Azure using the Azure SDKs.
+
+## ✨ Key Features
+
+### 🤖 AI-Powered Query Processing
+- **Natural Language Understanding**: Ask questions in plain English about Azure resources
 - **Intelligent Query Analysis**: Automatically understands intent and extracts relevant parameters
 - **Real-time Azure Data**: Queries live Azure infrastructure via Azure SDKs
-- **User-Friendly Interface**: Clean, modern web interface for easy interaction
+- **Azure OpenAI Integration**: Uses GPT models for intelligent response generation
 
-## 📋 Prerequisites
+### 💬 Modern Chat Interface
+- **ChatGPT-Style UI**: Clean, modern interface with user messages on right, AI responses on left
+- **Markdown Rendering**: Rich text formatting for AI responses with code blocks, tables, and lists
+- **File Upload Support**: Upload and analyze Azure-related documents (PDFs, Word docs, etc.)
+- **Conversation History**: Persistent chat history with sidebar navigation
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+
+### 🔧 Azure Resource Support
+- **Virtual Machines**: Status, SKU, configuration, performance metrics
+- **Databases**: SQL, CosmosDB, configuration and performance data
+- **Virtual Networks**: Subnets, address spaces, security groups
+- **Storage Accounts**: Configuration, replication types, access tiers
+- **Resource Groups**: Resource inventory and organization
+- **Cost Analysis**: Billing information and cost optimization insights
+
+## 🏗️ Architecture Overview
+
+```
+Azure Infrastructure AI Assistant
+├── Frontend (React + TypeScript + Vite)
+│   ├── ChatGPT-style UI components
+│   ├── Real-time chat interface
+│   ├── File upload and management
+│   └── Responsive design system
+├── Backend (Node.js + Express)
+│   ├── Azure SDK integration
+│   ├── OpenAI query processing
+│   ├── File upload handling
+│   └── REST API endpoints
+└── Azure Services
+    ├── Azure OpenAI (GPT models)
+    ├── Azure Resource Manager
+    ├── Azure Blob Storage (file uploads)
+    └── Azure Cost Management
+```
+
+## 🎨 UI Components Built
+
+### Core Chat Interface Components
+
+#### [`ChatMessages.tsx`](frontend/src/pages/azure-chat/components/ChatMessages.tsx)
+- **Purpose**: Renders the main chat conversation
+- **Features**:
+  - User messages displayed on right with gray bubbles
+  - AI responses on left with clean, unbubbled layout
+  - Markdown rendering with syntax highlighting
+  - File attachment display with icons and metadata
+  - Loading states with animated indicators
+
+#### [`ChatInput.tsx`](frontend/src/pages/azure-chat/components/ChatInput.tsx)
+- **Purpose**: Message input and file upload interface
+- **Features**:
+  - Clean white background with subtle borders
+  - Auto-expanding text area
+  - File upload integration
+  - Send button with proper disabled states
+  - Keyboard shortcuts (Enter to send, Shift+Enter for new line)
+
+#### [`WelcomeScreen.tsx`](frontend/src/pages/azure-chat/components/WelcomeScreen.tsx)
+- **Purpose**: Initial screen with example queries
+- **Features**:
+  - Centered ChatGPT logo
+  - Example query cards with hover effects
+  - 2-column responsive grid layout
+  - Clean, minimal design
+
+#### [`ChatHeader.tsx`](frontend/src/pages/azure-chat/components/ChatHeader.tsx)
+- **Purpose**: Top navigation bar
+- **Features**:
+  - Clean white header with simple title
+  - Sidebar toggle button
+  - New chat button
+  - Minimal, distraction-free design
+
+#### [`Sidebar.tsx`](frontend/src/pages/azure-chat/components/Sidebar.tsx)
+- **Purpose**: Conversation history and navigation
+- **Features**:
+  - Dark theme matching ChatGPT
+  - Conversation list with active state highlighting
+  - New chat creation
+  - Conversation deletion
+  - User profile section
+
+### File Management Components
+
+#### [`FileUpload.tsx`](frontend/src/pages/azure-chat/components/FileUpload.tsx)
+- **Purpose**: File selection and drag-drop interface
+- **Features**:
+  - Drag and drop file upload
+  - Click to select files
+  - Multiple file support
+  - File type validation
+  - Visual feedback during drag operations
+
+#### [`UploadedFiles.tsx`](frontend/src/pages/azure-chat/components/UploadedFiles.tsx)
+- **Purpose**: Display and manage uploaded files
+- **Features**:
+  - File cards with type-specific icons
+  - Upload progress indicators
+  - File removal functionality
+  - Status indicators (uploading, completed, error)
+  - File size and name display
+
+## 🚀 Quick Start
+
+### Prerequisites
 
 - Node.js 18+ installed
 - Azure subscription with resources
@@ -30,23 +133,27 @@ Your Service Principal needs the following roles:
 - `Cost Management Reader` for cost queries
 - Access to Azure OpenAI service
 
-## 🚀 Quick Start
+### Installation & Setup
 
-### 1. Clone and Install
+1. **Clone and Install Dependencies**
 
 ```bash
-# Create project directory
-mkdir azure-infrastructure-query
-cd azure-infrastructure-query
+# Clone the project
+git clone <repository-url>
+cd azure-infra-assistant
 
-# Initialize and install dependencies
-npm init -y
+# Install dependencies for both frontend and backend
 npm install
+
+# Install frontend dependencies
+cd frontend
+npm install
+cd ..
 ```
 
-### 2. Configure Environment
+2. **Configure Environment Variables**
 
-Create a `.env` file in the root directory with your Azure credentials:
+Create a `.env` file in the `backend` directory:
 
 ```properties
 # Azure Configuration
@@ -59,180 +166,186 @@ AZURE_SUBSCRIPTION_ID=your-subscription-id
 AZURE_OPENAI_API_KEY=your-openai-key
 AZURE_OPENAI_ENDPOINT=https://your-openai-endpoint.cognitiveservices.azure.com
 AZURE_OPENAI_API_VERSION=2025-01-01-preview
-AZURE_OPENAI_DEPLOYMENT_NAME=gpt-5-chat
+AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4
 
 # Application Configuration
-PORT=3000
+PORT=3001
 NODE_ENV=development
 LOG_LEVEL=info
 
-# Optional: Limit queries to specific resource groups (comma-separated)
+# Optional: Limit queries to specific resource groups
 RESOURCE_GROUPS=rg-dev,rg-prod,rg-staging
 ```
 
-### 3. Test Connection
+3. **Start the Application**
 
 ```bash
-npm test
-```
-
-This will verify:
-- Azure authentication works
-- Can access resource groups
-- Azure OpenAI connection is successful
-
-### 4. Start the Server
-
-```bash
-npm start
-
-# Or for development with auto-reload:
+# Start both frontend and backend (recommended for development)
 npm run dev
+
+# Or start individually:
+# Backend only
+npm run backend
+
+# Frontend only  
+npm run frontend
+
+# Production build and start
+npm run build
+npm start
 ```
 
-The server will start on `http://localhost:3000`
-
-### 5. Access the Interface
+4. **Access the Application**
 
 Open your browser and navigate to `http://localhost:3000`
 
 ## 💬 Example Queries
 
-Here are some example questions you can ask:
-
 ### Virtual Machines
-- "What is the status of dami-vm?"
-- "What size is the prod-server VM?"
-- "Show me all VMs in rg-prod"
+- "What is the status of my production VM?"
+- "Show me all VMs in resource group XYZ"
+- "What is the size of dami-vm?"
 
 ### Databases
-- "What is the SKU of xyz database?"
-- "What tier is the production database?"
-- "List all databases in rg-prod"
+- "List all storage accounts in my subscription"
+- "What is the SKU of the production database?"
+- "Show me database performance metrics"
 
 ### Networks
-- "How many subnets are in the abc vnet?"
-- "Show me the address space of main-vnet"
-- "What subnets exist in production-vnet?"
-
-### Storage
-- "What is the replication type of storage123?"
-- "Show me storage account details for mystore"
+- "How many subnets are in the main vnet?"
+- "Show me the address space of production-vnet"
+- "What security groups are applied to web-subnet?"
 
 ### Costs
-- "What was the cost of dami-vm last month?"
-- "Show me spending for rg-prod last quarter"
+- "What are the costs for my Azure resources this month?"
+- "Show me spending for production resources last quarter"
+- "What is the cost breakdown by service?"
 
 ### General
-- "List all resources in rg-dev"
+- "List all resources in development resource group"
 - "How many resources are in production?"
 - "What is the location of app-service-1?"
 
 ## 📁 Project Structure
 
 ```
-azure-infrastructure-query/
-├── server.js                 # Express server
-├── azureQueryHandler.js      # Main query processing logic
-├── queryAnalyzer.js          # Query intent & parameter extraction
-├── azureResourceClient.js    # Azure SDK integration
-├── test-connection.js        # Connection testing script
-├── package.json              # Dependencies
-├── .env                      # Environment configuration
-└── README.md                 # This file
+azure-infra-assistant/
+├── frontend/                    # React + TypeScript frontend
+│   ├── src/
+│   │   ├── pages/azure-chat/    # Main chat interface
+│   │   │   ├── components/      # UI components
+│   │   │   │   ├── ChatMessages.tsx    # Message rendering
+│   │   │   │   ├── ChatInput.tsx       # Input interface
+│   │   │   │   ├── WelcomeScreen.tsx   # Landing screen
+│   │   │   │   ├── ChatHeader.tsx      # Top navigation
+│   │   │   │   ├── Sidebar.tsx         # Conversation history
+│   │   │   │   ├── FileUpload.tsx      # File upload
+│   │   │   │   └── UploadedFiles.tsx   # File management
+│   │   │   ├── page.tsx        # Main chat page
+│   │   │   └── types.ts        # TypeScript definitions
+│   │   └── App.tsx             # Root component
+├── backend/                    # Node.js + Express backend
+│   ├── server.js              # Express server
+│   ├── azureQueryHandler.js   # Main query processing
+│   ├── queryAnalyzer.js       # Query intent analysis
+│   ├── azureResourceClient.js # Azure SDK integration
+│   ├── promptLoader.js        # AI prompt management
+│   └── test-connection.js     # Connection testing
+├── prompts/                   # AI prompt templates
+│   ├── query-analyzer.txt     # Query analysis prompts
+│   ├── response-generator.txt # Response generation prompts
+│   └── test-connection.txt    # Connection test prompts
+└── package.json              # Project configuration
 ```
 
 ## 🔧 Configuration Options
 
 ### Resource Group Filtering
 
-By default, the system queries all resource groups. To limit queries to specific resource groups:
+Limit queries to specific resource groups:
 
 ```properties
 RESOURCE_GROUPS=rg-dev,rg-prod,rg-staging
 ```
 
-### Logging
+### File Upload Settings
 
-Adjust log verbosity:
+Configure supported file types and size limits in the frontend components.
 
-```properties
-LOG_LEVEL=debug  # Options: error, warn, info, debug
-```
+### UI Customization
+
+The ChatGPT-style interface can be customized through:
+- Tailwind CSS classes in component files
+- Color schemes in the design system
+- Layout adjustments in component structures
 
 ## 🛠️ Troubleshooting
 
-### "Authentication Failed"
-- Verify your Azure credentials in `.env`
+### Common Issues
+
+**"Authentication Failed"**
+- Verify Azure credentials in backend `.env` file
 - Ensure Service Principal has proper permissions
-- Check that credentials haven't expired
+- Check credential expiration
 
-### "Resource Not Found"
-- Verify resource name spelling
-- Check if resource exists in accessible resource groups
-- Ensure Service Principal has Reader access
-
-### "OpenAI Connection Failed"
-- Verify OpenAI endpoint and key
+**"OpenAI Connection Failed"**
+- Verify OpenAI endpoint and API key
 - Check deployment name matches your Azure OpenAI deployment
 - Ensure API version is supported
 
-### "No Response from Backend"
-- Verify server is running on port 3000
-- Check for firewall issues
-- Review server logs for errors
+**"File Upload Not Working"**
+- Check backend upload endpoint is running
+- Verify file size and type restrictions
+- Check Azure Blob Storage configuration
+
+**"UI Not Loading Properly"**
+- Ensure both frontend and backend are running
+- Check browser console for JavaScript errors
+- Verify all dependencies are installed
 
 ## 🔒 Security Best Practices
 
-1. **Never commit `.env` file** - Add it to `.gitignore`
-2. **Use Azure Key Vault** for production deployments
+1. **Never commit `.env` files** - Add to `.gitignore`
+2. **Use Azure Key Vault** for production credential management
 3. **Implement proper RBAC** - Grant minimal required permissions
-4. **Enable logging and monitoring** for audit trails
-5. **Use managed identities** when deploying to Azure
+4. **Enable CORS properly** for frontend-backend communication
+5. **Validate file uploads** to prevent security risks
+6. **Use HTTPS** in production environments
 
-## 🚢 Deployment to Azure
+## 🚢 Deployment
 
-### Deploy as Azure App Service
-
+### Local Development
 ```bash
-# Install Azure CLI
-az login
-
-# Create App Service
-az webapp up --name azure-infra-query --resource-group your-rg --runtime "NODE|18-lts"
-
-# Configure environment variables
-az webapp config appsettings set --name azure-infra-query --resource-group your-rg --settings @appsettings.json
+npm run dev
 ```
 
-### Deploy as Azure Container Instance
-
+### Production Build
 ```bash
-# Build Docker image
-docker build -t azure-infra-query .
-
-# Push to Azure Container Registry
-az acr build --registry yourregistry --image azure-infra-query:latest .
-
-# Deploy to ACI
-az container create --resource-group your-rg --name azure-infra-query --image yourregistry.azurecr.io/azure-infra-query:latest
+npm run build
+npm start
 ```
 
-## 📊 Monitoring
+### Docker Deployment
+```bash
+# Build and run with Docker
+docker build -t azure-infra-assistant .
+docker run -p 3000:3000 azure-infra-assistant
+```
 
-Monitor your application:
-- **Application Insights**: For detailed telemetry
-- **Azure Monitor**: For infrastructure monitoring
-- **Log Analytics**: For query and error analysis
+### Azure App Service
+```bash
+az webapp up --name azure-infra-assistant --resource-group your-rg --runtime "NODE|18-lts"
+```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Areas for improvement:
-- Enhanced cost analysis with Cost Management API
-- Support for more Azure resource types
-- Advanced querying with KQL integration
+Areas for improvement and contribution:
+- Enhanced Azure resource type support
+- Advanced query capabilities with KQL integration
 - Multi-subscription support
 - Enhanced security features
+- Performance optimizations
+- Additional UI themes and customization options
 
 ## 📝 License
 
@@ -248,8 +361,10 @@ For issues or questions:
 
 ## 🎉 What's Next?
 
-- Add support for Azure Monitor metrics
+- Add support for Azure Monitor metrics and alerts
 - Implement KQL query generation for Log Analytics
 - Add export functionality for query results
-- Create dashboards for common queries
-- Implement user authentication and authorization
+- Create customizable dashboards for common queries
+- Implement user authentication and role-based access
+- Add support for Azure Policy and compliance queries
+- Enhanced file analysis with document intelligence

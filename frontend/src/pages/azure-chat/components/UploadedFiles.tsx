@@ -1,4 +1,4 @@
-import { UploadedFile } from '../types';
+import type { UploadedFile } from '../types';
 
 interface UploadedFilesProps {
   files: UploadedFile[];
@@ -38,7 +38,7 @@ export default function UploadedFiles({ files, onRemove }: UploadedFilesProps) {
       {files.map((file) => (
         <div
           key={file.id}
-          className="group relative bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-xl px-3 py-2 flex items-center gap-2 hover:border-gray-600 transition-all duration-300"
+          className="group relative bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 flex items-center gap-2 hover:border-gray-400 transition-all duration-300"
         >
           {file.status === 'uploading' && (
             <div className="absolute inset-0 bg-blue-500/10 rounded-xl overflow-hidden">
@@ -53,10 +53,10 @@ export default function UploadedFiles({ files, onRemove }: UploadedFilesProps) {
             <i className={`${getFileIcon(file.type)} ${getFileColor(file.type)} text-xl`}></i>
             
             <div className="flex flex-col">
-              <span className="text-gray-100 text-sm font-medium max-w-[150px] truncate">
+              <span className="text-gray-900 text-sm font-medium max-w-[150px] truncate">
                 {file.name}
               </span>
-              <span className="text-gray-500 text-xs">
+              <span className="text-gray-600 text-xs">
                 {file.status === 'uploading' ? `${file.progress}%` : formatFileSize(file.size)}
               </span>
             </div>
@@ -64,7 +64,7 @@ export default function UploadedFiles({ files, onRemove }: UploadedFilesProps) {
             {file.status === 'completed' && (
               <button
                 onClick={() => onRemove(file.id)}
-                className="ml-2 text-gray-400 hover:text-red-400 transition-colors duration-300"
+                className="ml-2 text-gray-500 hover:text-red-500 transition-colors duration-300"
               >
                 <i className="ri-close-line text-lg"></i>
               </button>

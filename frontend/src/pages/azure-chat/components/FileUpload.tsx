@@ -69,8 +69,8 @@ export default function FileUpload({ onFileSelect, disabled }: FileUploadProps) 
         onDrop={handleDrop}
         className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 whitespace-nowrap ${
           isDragging
-            ? 'bg-blue-500/30 text-blue-400 scale-110'
-            : 'bg-gray-700/50 text-gray-400 hover:bg-gray-700 hover:text-gray-300'
+            ? 'bg-blue-100 text-blue-600 scale-110'
+            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-700'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         title="Upload files"
       >
