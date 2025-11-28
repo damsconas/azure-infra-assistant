@@ -2,20 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
 import Sidebar from './components/Sidebar';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-interface Conversation {
-  id: string;
-  title: string;
-  messages: Message[];
-  timestamp: Date;
-}
+import { Conversation, Message, UploadedFile } from './types';
 
 export default function AzureChat() {
   const [conversations, setConversations] = useState<Conversation[]>([
@@ -42,19 +29,26 @@ export default function AzureChat() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim() || isLoading) return;
+  const handleSendMessage = async (content: string, files?: UploadedFile[]) => {
+    if ((!content.trim() && (!files || files.length === 0)) || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: content.trim(),
-      timestamp: new Date()
+      timestamp: new Date(),
+      files
     };
 
     setConversations(prev => prev.map(conv =>
       conv.id === currentConversationId
-        ? { ...conv, messages: [...conv.messages, userMessage] }
+        ? {
+            ...conv,
+            messages: [...conv.messages, userMessage],
+            title: conv.messages.length === 0 ?
+              (content ? content.slice(0, 30) : `${files?.length} file(s) uploaded`) :
+              conv.title
+          }
         : conv
     ));
 
@@ -62,13 +56,19 @@ export default function AzureChat() {
 
     try {
       // Make API call to our backend
-      const response = await fetch('http://localhost:3000/api/query', {
+      const response = await fetch('/api/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          question: content.trim()
+          question: content.trim(),
+          files: files?.map(f => ({
+            name: f.name,
+            size: f.size,
+            type: f.type,
+            blobUrl: f.blobUrl
+          }))
         })
       });
 
@@ -89,8 +89,7 @@ export default function AzureChat() {
         conv.id === currentConversationId
           ? {
               ...conv,
-              messages: [...conv.messages, assistantMessage],
-              title: conv.messages.length === 0 ? content.slice(0, 30) : conv.title
+              messages: [...conv.messages, assistantMessage]
             }
           : conv
       ));
@@ -98,10 +97,23 @@ export default function AzureChat() {
     } catch (error) {
       console.error('Error sending message:', error);
       
+      let errorContent = `I encountered an error while processing your query: ${error instanceof Error ? error.message : 'Unknown error'}.`;
+      
+      // Provide more specific guidance based on error type
+      if (error instanceof Error) {
+        if (error.message.includes('Azure authentication failed')) {
+          errorContent = 'Azure authentication failed. Please check your Azure credentials in the backend .env file. File uploads will still work, but querying Azure resources requires valid credentials.';
+        } else if (error.message.includes('OpenAI connection failed')) {
+          errorContent = 'Azure OpenAI connection failed. Please check your OpenAI configuration in the backend .env file.';
+        } else if (error.message.includes('HTTP error! status: 400')) {
+          errorContent = 'The backend server responded with an error. This is likely due to invalid Azure or OpenAI configuration. Please check your .env file settings.';
+        }
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I encountered an error while processing your query: ${error instanceof Error ? error.message : 'Unknown error'}. Please make sure the backend server is running on port 3000.`,
+        content: errorContent,
         timestamp: new Date()
       };
 
@@ -109,8 +121,7 @@ export default function AzureChat() {
         conv.id === currentConversationId
           ? {
               ...conv,
-              messages: [...conv.messages, errorMessage],
-              title: conv.messages.length === 0 ? content.slice(0, 30) : conv.title
+              messages: [...conv.messages, errorMessage]
             }
           : conv
       ));
